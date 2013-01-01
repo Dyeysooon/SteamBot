@@ -95,9 +95,9 @@ namespace SteamBot
 
         public abstract void OnTradeInit ();
 
-        public abstract void OnTradeAddItem (Schema.Item schemaItem, Inventory.Item inventoryItem);
+        public abstract void OnTradeAddItem(Schema.Item item, Inventory.Item inventoryItem);
 
-        public abstract void OnTradeRemoveItem (Schema.Item schemaItem, Inventory.Item inventoryItem);
+        public abstract void OnTradeRemoveItem(Schema.Item item, Inventory.Item inventoryItem);
 
         public abstract void OnTradeMessage (string message);
 

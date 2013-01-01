@@ -175,42 +175,42 @@ namespace SteamBot
             if (CurrentTrade != null)
                 return false;
 
-            try
-            {
+            //try
+            //{
                 tradeManager.InitializeTrade(SteamUser.SteamID, other);
                 CurrentTrade = tradeManager.StartTrade (SteamUser.SteamID, other);
-            }
-            catch (SteamTrade.Exceptions.InventoryFetchException ie)
-            {
-                // we shouldn't get here because the inv checks are also
-                // done in the TradeProposedCallback handler.
-                string response = String.Empty;
+            //}
+            //catch (SteamTrade.Exceptions.InventoryFetchException ie)
+            //{
+            //    // we shouldn't get here because the inv checks are also
+            //    // done in the TradeProposedCallback handler.
+            //    string response = String.Empty;
                 
-                if (ie.FailingSteamId.ConvertToUInt64() == other.ConvertToUInt64())
-                {
-                    response = "Trade failed. Could not correctly fetch your backpack. Either the inventory is inaccessable or your backpack is private.";
-                }
-                else 
-                {
-                    response = "Trade failed. Could not correctly fetch my backpack.";
-                }
+            //    if (ie.FailingSteamId.ConvertToUInt64() == other.ConvertToUInt64())
+            //    {
+            //        response = "Trade failed. Could not correctly fetch your backpack. Either the inventory is inaccessable or your backpack is private.";
+            //    }
+            //    else 
+            //    {
+            //        response = "Trade failed. Could not correctly fetch my backpack.";
+            //    }
                 
-                SteamFriends.SendChatMessage(other, 
-                                             EChatEntryType.ChatMsg,
-                                             response);
+            //    SteamFriends.SendChatMessage(other, 
+            //                                 EChatEntryType.ChatMsg,
+            //                                 response);
 
-                log.Info ("Bot sent other: " + response);
+            //    log.Info ("Bot sent other: " + response);
                 
-                CurrentTrade = null;
-                return false;
-            }
+            //    CurrentTrade = null;
+            //    return false;
+            //}
             
             CurrentTrade.OnClose += CloseTrade;
             SubscribeTrade (CurrentTrade, GetUserHandler (other));
 
             return true;
         }
-
+        
         void HandleSteamMessage (CallbackMsg msg)
         {
             log.Debug(msg.ToString());
@@ -278,20 +278,35 @@ namespace SteamBot
 
                 if (Trade.CurrentSchema == null)
                 {
+                    log.Info("Downloading Asset Prices");
+                    
+                    //Trade.AssetPrices = AssetPrices.FetchAllAssetPrices(apiKey, "en");
                     log.Info("Checking Schema...");
-                    Trade.CurrentSchema = Schema.FetchSchema(apiKey);
-                    if (Trade.CurrentSchema.Updated)
+                    //Trade.CurrentSchema = Schema.FetchSchema(apiKey, 440, "en");
+                    //if (Trade.CurrentSchema.Updated)
+                    //{
+                    //    log.Success("Schema Downloaded!");
+                    //}
+                    //else
+                    //{
+                    //    log.Success("Schema Up to Date");
+                    //}
+                    Trade.Schemas = Schema.FetchAllSchemas(apiKey, Schema.ValidAppIDs, "en");
+                    foreach (var s in Trade.Schemas)
                     {
-                        log.Success("Schema Downloaded!");
-                    }
-                    else
-                    {
-                        log.Success("Schema Up to Date");
+                        if (s.Updated)
+                        {
+                            log.Success("App " + s.AppId + " Schema Downloaded!");
+                        }
+                        else
+                        {
+                            log.Success("App " + s.AppId + " Schema Up to Date");
+                        }
                     }
                 }
-
                 SteamFriends.SetPersonaName (DisplayNamePrefix+DisplayName);
                 SteamFriends.SetPersonaState (EPersonaState.Online);
+                
 
                 log.Success ("Steam Bot Logged In Completely!");
 
@@ -353,34 +368,38 @@ namespace SteamBot
 
             msg.Handle<SteamTrading.TradeProposedCallback> (callback =>
             {
-                try
-                {
+                //try
+                //{
                     tradeManager.InitializeTrade(SteamUser.SteamID, callback.OtherClient);
-                }
-                catch 
-                {
-                    SteamFriends.SendChatMessage(callback.OtherClient, 
-                                                 EChatEntryType.ChatMsg,
-                                                 "Trade declined. Could not correctly fetch your backpack.");
+                //}
+                //catch 
+                //{
+                //    SteamFriends.SendChatMessage(callback.OtherClient, 
+                //                                 EChatEntryType.ChatMsg,
+                //                                 "Trade declined. Could not correctly fetch your backpack.");
                     
-                    SteamTrade.RespondToTrade (callback.TradeID, false);
-                    return;
-                }
+                //    SteamTrade.RespondToTrade (callback.TradeID, false);
+                //    return;
+                //}
 
-                if (tradeManager.OtherInventory.IsPrivate)
-                {
-                    SteamFriends.SendChatMessage(callback.OtherClient, 
-                                                 EChatEntryType.ChatMsg,
-                                                 "Trade declined. Your backpack cannot be private.");
+                //if (tradeManager.OtherInventory.IsPrivate)
+                //{
+                //    SteamFriends.SendChatMessage(callback.OtherClient, 
+                //                                 EChatEntryType.ChatMsg,
+                //                                 "Trade declined. Your backpack cannot be private.");
 
-                    SteamTrade.RespondToTrade (callback.TradeID, false);
-                    return;
-                }
+                //    SteamTrade.RespondToTrade (callback.TradeID, false);
+                //    return;
+                //}
 
                 if (CurrentTrade == null && GetUserHandler (callback.OtherClient).OnTradeRequest ())
                     SteamTrade.RespondToTrade (callback.TradeID, true);
                 else
-                    SteamTrade.RespondToTrade (callback.TradeID, false);
+                {
+                    SteamTrade.RespondToTrade(callback.TradeID, false);
+                    SteamFriends.SendChatMessage(callback.OtherClient, EChatEntryType.ChatMsg, "I'm currently busy, please try again later");
+                }
+                    
             });
 
             msg.Handle<SteamTrading.TradeResultCallback> (callback =>

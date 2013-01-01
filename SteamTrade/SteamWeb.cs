@@ -15,52 +15,43 @@ namespace SteamTrade
     public class SteamWeb
     {
 
-        public static string Fetch(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, bool ajax = true, DateTime ifModifiedSince = default(DateTime))
+        public static string Fetch(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, bool ajax = true)
         {
-            try
-            {
-                HttpWebResponse response = Request(url, method, data, cookies, ajax, ifModifiedSince);
+                HttpWebResponse response = Request(url, method, data, cookies, ajax);
                 StreamReader reader = new StreamReader(response.GetResponseStream());
                 return reader.ReadToEnd();
-            }
-            catch (WebException e)
-            {
-                if (e.Response != null)
-                {
-                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.NotModified)
-                    {
-                        Console.WriteLine("Not modified");
-                        return "not changed";
-                    }
-                    else
-                    {
-                        Console.WriteLine("unexpected stuff" + e);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("unexpected web ex");
-                }
-            }
-            return null;
         }
+        //public static HttpWebResponse Request(string url, string method)
+        //{
+        //    HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
 
-        public static HttpWebResponse Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, bool ajax = true, DateTime ifModifiedSince = default(DateTime))
+        //    request.Method = method;
+        //    request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
+        //    request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+        //    request.Host = "steamcommunity.com";
+        //    request.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11";
+        //    request.AllowAutoRedirect = false;
+
+        //    return request.GetResponse() as HttpWebResponse;
+        //}
+        public static HttpWebResponse Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, bool ajax = true)
         {
             HttpWebRequest request = WebRequest.Create (url) as HttpWebRequest;
 
             request.Method = method;
-
+            
             request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
             request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
             request.Host = "steamcommunity.com";
             request.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.47 Safari/536.11";
             request.Referer = "http://steamcommunity.com/trade/1";
 
-            if (ifModifiedSince != default(DateTime))
-            {
-                request.IfModifiedSince = ifModifiedSince;
-            }
+            //if (url == "http://steamcommunity.com/id/stormreaperclone003/inventory/json/440/2/?trading=1")
+            //{
+            //    request.Referer = "http://steamcommunity.com/trade/76561197973014398";
+            //    request.ProtocolVersion = HttpVersion.Version10;
+            //    request.KeepAlive = true;
+            //}
 
             if (ajax)
             {

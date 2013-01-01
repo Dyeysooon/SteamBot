@@ -29,17 +29,27 @@
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\..\..\Downloads\HtmlAgilityPack.1.4.6\Net40\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppContextData.cs" />
+    <Compile Include="AppKeyedCollection.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="SteamEconomy\AssetClassInfo.cs" />
+    <Compile Include="SteamEconomy\AssetPrices.cs" />
     <Compile Include="Exceptions\TradeException.cs" />
+    <Compile Include="SteamInventory.cs" />
     <Compile Include="Trade.cs" />
-    <Compile Include="Schema.cs" />
-    <Compile Include="Inventory.cs" />
+    <Compile Include="EconItems\Schema.cs" />
+    <Compile Include="EconItems\Inventory.cs" />
     <Compile Include="SteamWeb.cs" />
     <Compile Include="TradeSession.cs" />
     <Compile Include="TradeManager.cs" />
@@ -52,7 +62,7 @@
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lib\SteamKit2\SteamKit2\SteamKit2.csproj">
-      <Project>{BEB5BF07-BB56-402A-97A3-A41C6444C6A5}</Project>
+      <Project>{beb5bf07-bb56-402a-97a3-a41c6444c6a5}</Project>
       <Name>SteamKit2</Name>
     </ProjectReference>
   </ItemGroup>
