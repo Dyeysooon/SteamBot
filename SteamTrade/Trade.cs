@@ -456,7 +456,13 @@ namespace SteamTrade
                 // since there is no feedback to let us know that the trade
                 // is fully initialized we assume that it is when we start polling.
                 if (OnAfterInit != null)
-                    OnAfterInit ();
+                {
+                    if (MyInventory.Items.Length > MyInventory.NumSlots)
+                    {
+                        throw new TradeException("Bot inventory is too full");
+                    }
+                    OnAfterInit();
+                }
             }
 
             TradeStatus status = session.GetStatus();
